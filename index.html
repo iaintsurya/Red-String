@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Red String - Detective Board</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="ui-layer">
+        <div id="case-drawer" class="drawer-closed">
+            <button id="drawer-toggle">📁 Case Files (<span id="unread-count">0</span>)</button>
+            <div class="drawer-content">
+                <h3>Incoming Intel</h3>
+                <ul id="intel-list"></ul>
+            </div>
+        </div>
+
+        <div id="inspectorModal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close-btn">&times;</span>
+                <h2 id="inspectTitle">Clue Title</h2>
+                <img id="inspectImg" src="" alt="Clue Detail">
+                <p id="inspectDesc">Detailed description goes here...</p>
+            </div>
+        </div>
+
+        <div id="stringLabelModal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close-btn" id="closeLabelBtn">&times;</span>
+                <h2>Describe Connection</h2>
+                <input type="text" id="stringLabelInput" placeholder="e.g., Alibi doesn't match">
+                <button id="saveStringLabel">Confirm</button>
+            </div>
+        </div>
+
+        <div id="victoryOverlay" class="victory-modal hidden">
+            <div class="case-file-folder">
+                <div class="stamp-solved">SOLVED</div>
+                <h1>CASE CLOSED</h1>
+                <hr>
+                <p class="typewriter-text">
+                    <strong>Subject:</strong> The Murder of Arthur Vance<br><br>
+                    Through meticulous deduction, the connection between <strong>John Doe</strong> and the <strong>Bloody Knife</strong> was established. With the discovery of the <strong>Last Will</strong>, the motive became clear: greed. 
+                    <br><br>
+                    When <strong>Jane Vance</strong> was brought into the web of evidence, the conspiracy unraveled. Both suspects are now in custody. 
+                    <br><br>
+                    Excellent work, Detective.
+                </p>
+                <button id="resetGameBtn">Archive Case (Reset)</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="board">
+        <canvas id="stringCanvas"></canvas>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,385 @@
+/* --- GLOBAL STYLES --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+body {
+    background-color: #2b1810;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* --- THE MAIN BOARD WORKSPACE --- */
+#board {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    /* Traditional dark brown corkboard texture using CSS gradients */
+    background-color: #3d2a1a;
+    background-image: 
+        radial-gradient(rgba(0, 0, 0, 0.15) 15%, transparent 16%),
+        radial-gradient(rgba(0, 0, 0, 0.15) 15%, transparent 16%);
+    background-size: 8px 8px;
+    background-position: 0 0, 4px 4px;
+    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.6);
+}
+
+/* --- FIXED UI LAYER --- */
+#ui-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none; /* Clicks pass through empty spaces to reach cards below */
+    z-index: 9999;
+}
+
+#case-drawer, .modal, .victory-modal, .narrative-banner {
+    pointer-events: auto; /* Re-enables clicking inside menus and UI windows */
+}
+
+/* --- THE CANVAS BACKDROP --- */
+#stringCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* --- EVIDENCE / CLUE CARDS --- */
+.clue-card {
+    position: absolute;
+    width: 120px;
+    background: #f4edd2;
+    padding: 8px 8px 16px 8px;
+    box-shadow: 3px 5px 15px rgba(0, 0, 0, 0.5);
+    border: 1px solid #dcd3b6;
+    text-align: center;
+    cursor: grab;
+    user-select: none;
+    z-index: 2;
+    transition: transform 0.05s linear;
+}
+
+.clue-card.grabbing {
+    cursor: grabbing;
+    box-shadow: 8px 15px 25px rgba(0, 0, 0, 0.4);
+}
+
+.clue-card img {
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+    border: 1px solid #e0d5b1;
+    background: #eadeb8;
+    pointer-events: none;
+}
+
+.clue-card p {
+    font-size: 11px;
+    font-weight: bold;
+    color: #3d2a1a;
+    margin-top: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* --- PINS --- */
+.pin {
+    position: absolute;
+    top: -6px;
+    left: calc(50% - 7px);
+    width: 14px;
+    height: 14px;
+    background: radial-gradient(circle at 4px 4px, #ff4d4d, #990000);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    z-index: 10;
+    transition: transform 0.1s ease;
+}
+
+.pin:hover {
+    transform: scale(1.3);
+}
+
+/* --- CASE FILE SLIDE-OUT DRAWER --- */
+#case-drawer {
+    position: fixed;
+    top: 40px;
+    right: 0;
+    width: 280px;
+    height: calc(100vh - 80px);
+    background: #e6dec3;
+    border-left: 5px solid #8b7355;
+    border-top: 2px solid #8b7355;
+    border-bottom: 2px solid #8b7355;
+    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.drawer-closed {
+    transform: translateX(100%);
+}
+
+.drawer-open {
+    transform: translateX(0);
+}
+
+/* Drawer Pull Tab Button */
+#drawer-toggle {
+    position: absolute;
+    left: -155px;
+    top: 20px;
+    background: #8b7355;
+    color: #f4edd2;
+    border: none;
+    padding: 10px 15px;
+    font-weight: bold;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 5px 0 0 5px;
+    box-shadow: -3px 2px 8px rgba(0,0,0,0.3);
+}
+
+.drawer-content {
+    padding: 20px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.drawer-content h3 {
+    color: #3d2a1a;
+    border-bottom: 2px solid #8b7355;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+/* Intel / Clue Entry Lists inside Drawer */
+#intel-list {
+    list-style: none;
+}
+
+.intel-item {
+    background: #f4edd2;
+    padding: 10px;
+    margin-bottom: 12px;
+    border-radius: 3px;
+    border-left: 4px solid #d62828;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+.intel-item strong {
+    font-size: 13px;
+    color: #2b1810;
+}
+
+.pin-btn {
+    background: #3d2a1a;
+    color: #f4edd2;
+    border: none;
+    padding: 5px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 5px;
+    font-weight: bold;
+}
+
+.pin-btn:hover {
+    background: #d62828;
+}
+
+/* --- POPUP MODALS --- */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+.modal-content {
+    background: #f4edd2;
+    padding: 25px;
+    width: 400px;
+    border: 8px solid #3d2a1a;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    position: relative;
+    text-align: center;
+}
+
+.modal-content h2 {
+    color: #3d2a1a;
+    margin-bottom: 15px;
+    font-size: 20px;
+    text-transform: uppercase;
+}
+
+.modal-content img {
+    width: 150px;
+    height: 180px;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border: 2px solid #3d2a1a;
+}
+
+.modal-content p {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #4a3b2c;
+    text-align: left;
+    background: rgba(0,0,0,0.03);
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.close-btn {
+    position: absolute;
+    top: 5px;
+    right: 12px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #990000;
+    font-weight: bold;
+}
+
+/* String Label Prompt Modal Input fields */
+#stringLabelInput {
+    width: 100%;
+    padding: 8px;
+    margin: 15px 0;
+    border: 2px solid #8b7355;
+    background: #fff;
+    font-size: 13px;
+}
+
+#saveStringLabel {
+    background: #3d2a1a;
+    color: #f4edd2;
+    border: none;
+    padding: 8px 20px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* --- BANNER MESSAGES --- */
+.narrative-banner {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #3d2a1a;
+    color: #f4edd2;
+    padding: 12px 25px;
+    border-left: 6px solid #d62828;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+    font-size: 12px;
+    z-index: 10005;
+    max-width: 500px;
+    line-height: 1.4;
+    transition: opacity 0.5s ease;
+}
+
+/* --- HELPER CLASSES --- */
+.hidden {
+    display: none !important;
+}
+
+/* --- CASE FILE END GAME VICTORY SCREEN --- */
+.victory-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 10, 5, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 20000;
+}
+
+.case-file-folder {
+    background: #dfd5b6;
+    width: 550px;
+    padding: 40px;
+    border-radius: 4px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    border-left: 15px solid #c2b591;
+    position: relative;
+    transform: rotate(-1deg);
+}
+
+.stamp-solved {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    border: 4px dashed #990000;
+    color: #990000;
+    font-size: 22px;
+    font-weight: bold;
+    padding: 5px 15px;
+    transform: rotate(15deg);
+    opacity: 0.85;
+    letter-spacing: 2px;
+}
+
+.case-file-folder h1 {
+    font-size: 26px;
+    color: #2b1810;
+    margin-bottom: 5px;
+    letter-spacing: 1px;
+}
+
+.case-file-folder hr {
+    border: 0;
+    height: 2px;
+    background: #8b7355;
+    margin-bottom: 20px;
+}
+
+.typewriter-text {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #3d2a1a;
+    margin-bottom: 30px;
+}
+
+#resetGameBtn {
+    background: #990000;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: block;
+    margin: 0 auto;
+}
+
+#resetGameBtn:hover {
+    background: #cc0000;
+}
